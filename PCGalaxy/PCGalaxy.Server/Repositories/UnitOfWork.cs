@@ -2,9 +2,17 @@
 
 namespace PCGalaxy.Server.Repositories
 {
-	public class UnitOfWork(ApplicationDbContext context, IProductRepository? productRepository, ICategoryRepository? categoryRepository) : IUnitOfWork
+	public class UnitOfWork(
+		IProductRepository productRepository,
+		ICategoryRepository categoryRepository,
+		ICartItemRepository cartItemRepository,
+		IOrderItemRepository orderItemRepository,
+		IOrderRepository orderRepository) : IUnitOfWork
 	{
-		public IProductRepository ProductRepository => productRepository ??= new ProductRepository(context);
-		public ICategoryRepository CategoryRepository => categoryRepository ??= new CategoryRepository(context);
-	}
+		public IProductRepository ProductRepository { get; } = productRepository;
+		public ICategoryRepository CategoryRepository { get; } = categoryRepository;
+		public ICartItemRepository CartItemRepository { get; } = cartItemRepository;
+		public IOrderItemRepository OrderItemRepository { get; } = orderItemRepository;
+		public IOrderRepository OrderRepository { get; } = orderRepository;
+    }
 }

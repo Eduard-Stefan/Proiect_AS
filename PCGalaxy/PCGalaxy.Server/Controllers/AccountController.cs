@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PCGalaxy.Server.Services.Interfaces;
 using PCGalaxy.Server.ViewModels;
 
@@ -10,13 +9,8 @@ namespace PCGalaxy.Server.Controllers
 	public class AccountController(IAccountService accountService) : ControllerBase
 	{
 		[HttpPost("register")]
-		public async Task<IActionResult> RegisterAsync([FromBody, Required] RegisterViewModel model)
+		public async Task<IActionResult> RegisterAsync([FromBody] RegisterViewModel model)
 		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
 			var result = await accountService.RegisterAsync(model);
 
 			if (result.Succeeded)
@@ -24,22 +18,12 @@ namespace PCGalaxy.Server.Controllers
 				return Ok(model);
 			}
 
-			foreach (var error in result.Errors)
-			{
-				ModelState.AddModelError(string.Empty, error.Description);
-			}
-
-			return BadRequest(ModelState);
+			return BadRequest(result);
 		}
 
 		[HttpPost("login")]
-		public async Task<IActionResult> LoginAsync([FromBody, Required] LoginViewModel model)
+		public async Task<IActionResult> LoginAsync([FromBody] LoginViewModel model)
 		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
 			var result = await accountService.SignInAsync(model);
 
 			if (result.Succeeded)
@@ -47,9 +31,7 @@ namespace PCGalaxy.Server.Controllers
 				return Ok(model);
 			}
 
-			ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-
-			return BadRequest(ModelState);
+			return Unauthorized("Invalid login attempt.");
 		}
 
 		[HttpPost("logout")]

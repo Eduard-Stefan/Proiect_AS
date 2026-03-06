@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Edit Product</h1>
+<h1 mat-dialog-title>{{ title }}</h1>
 <div mat-dialog-content>
   <form #productForm="ngForm">
     <mat-form-field>
@@ -70,10 +70,10 @@
       </div>
       <div class="image-preview">
         <ng-container *ngIf="imageBase64; else placeholderImage">
-          <img [src]="'data:image/png;base64,' + imageBase64" class="preview-img"/>
+          <img [src]="'data:image/png;base64,' + imageBase64" class="preview-img" alt="Product preview"/>
         </ng-container>
         <ng-template #placeholderImage>
-          <img [src]="'data:image/png;base64,' + defaultProductImageBase64" class="preview-img"/>
+          <img [src]="'data:image/png;base64,' + defaultProductImageBase64" class="preview-img" alt="Default product preview"/>
         </ng-template>
       </div>
       <mat-error *ngIf="isImageTooLarge()">

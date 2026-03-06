@@ -2,6 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { AccountService } from './services/account.service';
 import { User } from './models/user.model';
 import { Router } from '@angular/router';
+import { ProductsService } from './services/products.service';
+import { Product } from './models/product.model';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { Subject, of } from 'rxjs';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +18,12 @@ export class AppComponent implements OnInit {
   static signedIn: boolean = false;
   static isAdmin: boolean = false;
 
-  constructor(public accountService: AccountService, private router: Router) {
+  constructor(
+    public accountService: AccountService,
+    private router: Router,
+    private productsService: ProductsService,
+    private sanitizer: DomSanitizer
+  ) {
     this.isSignedIn();
     this.getCurrentUser();
   }

@@ -5,7 +5,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ProductsComponent } from './products/products.component';
-import { CreateProductComponent } from './products/create-product/create-product.component';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,46 +30,30 @@ import { LoginComponent } from './login/login.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NotAuthorizedComponent } from './not-authorized/not-authorized.component';
 import { MatSelectModule } from '@angular/material/select';
-import { MotherboardsComponent } from './categories/motherboards/motherboards.component';
-import { CpusComponent } from './categories/cpus/cpus.component';
-import { GpusComponent } from './categories/gpus/gpus.component';
-import { RamComponent } from './categories/ram/ram.component';
-import { StoragesComponent } from './categories/storages/storages.component';
-import { PowerSuppliesComponent } from './categories/power-supplies/power-supplies.component';
-import { PcCasesComponent } from './categories/pc-cases/pc-cases.component';
-import { CoolersComponent } from './categories/coolers/coolers.component';
-import { FansComponent } from './categories/fans/fans.component';
-import { MonitorsComponent } from './categories/monitors/monitors.component';
-import { KeyboardsComponent } from './categories/keyboards/keyboards.component';
-import { MiceComponent } from './categories/mice/mice.component';
-import { MousePadsComponent } from './categories/mouse-pads/mouse-pads.component';
-import { HeadsetsComponent } from './categories/headsets/headsets.component';
+import { ViewProductComponent } from './view-product/view-product.component';
+import { CheckoutComponent } from './checkout/checkout.component';
+import { CartComponent } from './cart/cart.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ProductCategoryComponent } from './product-category/product-category.component';
+import { OrdersHistoryComponent } from './orders-history/orders-history.component';
+import { ViewOrderComponent } from './view-order/view-order.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ProductsComponent,
-    CreateProductComponent,
     EditProductComponent,
     ConfirmDialogComponent,
     HomeComponent,
     RegisterComponent,
     LoginComponent,
     NotAuthorizedComponent,
-    MotherboardsComponent,
-    CpusComponent,
-    GpusComponent,
-    RamComponent,
-    StoragesComponent,
-    PowerSuppliesComponent,
-    PcCasesComponent,
-    CoolersComponent,
-    FansComponent,
-    MonitorsComponent,
-    KeyboardsComponent,
-    MiceComponent,
-    MousePadsComponent,
-    HeadsetsComponent
+    ViewProductComponent,
+    CartComponent,
+    CheckoutComponent,
+    ProductCategoryComponent,
+    OrdersHistoryComponent,
+    ViewOrderComponent
   ],
   imports: [
     BrowserModule,
@@ -95,7 +78,8 @@ import { HeadsetsComponent } from './categories/headsets/headsets.component';
     AppRoutingModule,
     MatCheckboxModule,
     MatOptionModule,
-    MatSelectModule
+    MatSelectModule,
+    MatTooltipModule
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi())

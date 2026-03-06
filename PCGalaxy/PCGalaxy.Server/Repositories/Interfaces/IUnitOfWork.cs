@@ -4,5 +4,8 @@
 	{
 		IProductRepository ProductRepository { get; }
 		ICategoryRepository CategoryRepository { get; }
-	}
+		ICartItemRepository CartItemRepository { get; }
+        IOrderItemRepository OrderItemRepository { get; }
+        IOrderRepository OrderRepository { get; }
+    }
 }

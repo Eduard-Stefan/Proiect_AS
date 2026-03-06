@@ -22,8 +22,8 @@ export class LoginComponent {
   ) {}
 
   onSubmit(): void {
-    const trimmedEmail: string = this.email.trim().replace(/\s+/g, ' ');
-    const trimmedPassword: string = this.password.trim().replace(/\s+/g, ' ');
+    const trimmedEmail: string = this.email.trim().replaceAll(/\s+/g, ' ');
+    const trimmedPassword: string = this.password.trim().replaceAll(/\s+/g, ' ');
 
     const model: Login = {
       email: trimmedEmail,

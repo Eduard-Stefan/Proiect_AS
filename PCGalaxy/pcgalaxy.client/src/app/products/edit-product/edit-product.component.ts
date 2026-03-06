@@ -1,10 +1,11 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, Optional } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ProductsService } from '../../services/products.service';
 import { Product } from '../../models/product.model';
 import { Category } from '../../models/category.model';
 import { CategoriesService } from '../../services/categories.service';
 import { environment } from '../../../environments/environment';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-edit-product',
@@ -12,7 +13,7 @@ import { environment } from '../../../environments/environment';
   styleUrl: './edit-product.component.css',
 })
 export class EditProductComponent implements OnInit {
-  private id: string;
+  private readonly id: string = '';
   public name: string = '';
   public description: string = '';
   public specifications: string = '';
@@ -20,27 +21,45 @@ export class EditProductComponent implements OnInit {
   public stock: number = 0;
   public supplier: string = '';
   public deliveryMethod: string = '';
-  public category: Category;
+  public category: Category | null = null;
   public categories: Category[] = [];
   public imageBase64: string = '';
   defaultProductImageBase64: string = environment.defaultProductImageBase64;
+
+  public title: string = '';
+  private readonly isEditMode: boolean = false;
 
   constructor(
     private productsService: ProductsService,
     private categoriesService: CategoriesService,
     private dialogRef: MatDialogRef<EditProductComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Product
+    @Optional() @Inject(MAT_DIALOG_DATA) public data: Product
   ) {
-    this.id = data.id;
-    this.name = data.name;
-    this.description = data.description;
-    this.specifications = data.specifications;
-    this.price = data.price;
-    this.stock = data.stock;
-    this.supplier = data.supplier;
-    this.deliveryMethod = data.deliveryMethod;
-    this.category = data.category;
-    this.imageBase64 = data.imageBase64;
+    this.isEditMode = !!data;
+    this.title = this.isEditMode ? 'Edit Product' : 'Create Product';
+
+    if (this.isEditMode) {
+      this.id = data.id;
+      this.name = data.name;
+      this.description = data.description;
+      this.specifications = data.specifications;
+      this.price = data.price;
+      this.stock = data.stock;
+      this.supplier = data.supplier;
+      this.deliveryMethod = data.deliveryMethod;
+      this.category = data.category;
+      this.imageBase64 = data.imageBase64;
+    } else {
+      this.name = '';
+      this.description = '';
+      this.specifications = '';
+      this.price = 0;
+      this.stock = 0;
+      this.supplier = '';
+      this.deliveryMethod = '';
+      this.category = null;
+      this.imageBase64 = '';
+    }
   }
 
   ngOnInit(): void {
@@ -51,7 +70,10 @@ export class EditProductComponent implements OnInit {
     this.categoriesService.getCategories().subscribe({
       next: (result: Category[]) => {
         this.categories = result;
-        this.category = this.categories.find(c => c.id === this.category.id)!;
+        if (this.isEditMode && this.category) {
+          const categoryId = this.category.id; 
+          this.category = this.categories.find(c => c.id === categoryId) || null;
+        }
       },
       error: (err) => {
         console.error(err);
@@ -64,13 +86,14 @@ export class EditProductComponent implements OnInit {
   }
 
   onSave(): void {
-    const trimmedName: string = this.name.trim().replace(/\s+/g, ' ');
-    const trimmedDescription: string = this.description.trim().replace(/\s+/g, ' ');
-    const trimmedSpecifications: string = this.specifications.trim().replace(/\s+/g, ' ');
-    const trimmedSupplier: string = this.supplier.trim().replace(/\s+/g, ' ');
-    const trimmedDeliveryMethod: string = this.deliveryMethod.trim().replace(/\s+/g, ' ');
+    const trimmedName: string = this.name.trim().replaceAll(/\s+/g, ' ');
+    const trimmedDescription: string = this.description.trim().replaceAll(/\s+/g, ' ');
+    const trimmedSpecifications: string = this.specifications.trim().replaceAll(/\s+/g, ' ');
+    const trimmedSupplier: string = this.supplier.trim().replaceAll(/\s+/g, ' ');
+    const trimmedDeliveryMethod: string = this.deliveryMethod.trim().replaceAll(/\s+/g, ' ');
+
     const product: Product = {
-      id: this.id,
+      id: this.isEditMode ? this.id : uuidv4(),
       name: trimmedName,
       description: trimmedDescription,
       specifications: trimmedSpecifications,
@@ -78,18 +101,29 @@ export class EditProductComponent implements OnInit {
       stock: this.stock,
       supplier: trimmedSupplier,
       deliveryMethod: trimmedDeliveryMethod,
-      category: this.category,
-      imageBase64: this.imageBase64 || this.defaultProductImageBase64
+      category: this.category!,
+      imageBase64: this.imageBase64 || this.defaultProductImageBase64,
     };
 
-    this.productsService.updateProduct(this.id, product).subscribe({
-      next: () => {
-        this.dialogRef.close(product);
-      },
-      error: (err) => {
-        console.error(err);
-      },
-    });
+    if (this.isEditMode) {
+      this.productsService.updateProduct(this.id, product).subscribe({
+        next: () => {
+          this.dialogRef.close(product);
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
+    } else {
+      this.productsService.createProduct(product).subscribe({
+        next: (response) => {
+          this.dialogRef.close(response);
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
+    }
   }
 
   onFileSelected(event: Event): void {
@@ -100,7 +134,8 @@ export class EditProductComponent implements OnInit {
       reader.onload = () => {
         const base64String = reader.result as string;
         const base64ContentArray = base64String.split(',');
-        this.imageBase64 = base64ContentArray.length > 1 ? base64ContentArray[1] : base64String;
+        this.imageBase64 =
+          base64ContentArray.length > 1 ? base64ContentArray[1] : base64String;
       };
       reader.readAsDataURL(file);
     }
@@ -111,7 +146,10 @@ export class EditProductComponent implements OnInit {
   }
 
   isNoImage(): boolean {
-    return this.imageBase64.length === 0 || this.imageBase64 === this.defaultProductImageBase64;
+    return (
+      this.imageBase64.length === 0 ||
+      this.imageBase64 === this.defaultProductImageBase64
+    );
   }
 
   isImageTooLarge(): boolean {
@@ -127,7 +165,9 @@ export class EditProductComponent implements OnInit {
   }
 
   isSpecificationsWhitespace(): boolean {
-    return this.specifications.length > 0 && this.specifications.trim().length === 0;
+    return (
+      this.specifications.length > 0 && this.specifications.trim().length === 0
+    );
   }
 
   isSupplierWhitespace(): boolean {
@@ -135,7 +175,9 @@ export class EditProductComponent implements OnInit {
   }
 
   isDeliveryMethodWhitespace(): boolean {
-    return this.deliveryMethod.length > 0 && this.deliveryMethod.trim().length === 0;
+    return (
+      this.deliveryMethod.length > 0 && this.deliveryMethod.trim().length === 0
+    );
   }
 
   isNameTooLong(): boolean {

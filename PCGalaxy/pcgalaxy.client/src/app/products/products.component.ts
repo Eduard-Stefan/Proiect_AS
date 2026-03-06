@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Product } from '../models/product.model';
 import { ProductsService } from '../services/products.service';
 import { MatDialog } from '@angular/material/dialog';
-import { CreateProductComponent } from './create-product/create-product.component';
 import { EditProductComponent } from './edit-product/edit-product.component';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -84,7 +83,7 @@ export class ProductsComponent implements OnInit {
   }
 
   openCreateProductDialog(): void {
-    const dialogRef = this.dialog.open(CreateProductComponent, {
+    const dialogRef = this.dialog.open(EditProductComponent, {
       width: '23rem'
     });
 

@@ -23,6 +23,11 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
+builder.Services.AddScoped<ICartItemService, CartItemService>();
+builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddControllers();
 
@@ -42,9 +47,10 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
 	var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-	if (dbContext.Database.GetPendingMigrations().Any())
+	var pending = await dbContext.Database.GetPendingMigrationsAsync();
+	if (pending.Any())
 	{
-		dbContext.Database.Migrate();
+		await dbContext.Database.MigrateAsync();
 	}
 }
 
@@ -68,4 +74,4 @@ app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
 
-app.Run();
+await app.RunAsync();

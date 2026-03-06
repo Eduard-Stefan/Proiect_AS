@@ -9,8 +9,11 @@ namespace PCGalaxy.Server
 	{
 		public required DbSet<Product> Products { get; set; }
 		public required DbSet<Category> Categories { get; set; }
+		public required DbSet<CartItem> CartItems { get; set; }
+        public required DbSet<OrderItem> OrderItems { get; set; }
+        public required DbSet<Order> Orders { get; set; }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 
@@ -43,7 +46,31 @@ namespace PCGalaxy.Server
 				entity.HasMany(c => c.Products).WithOne(p => p.Category).HasForeignKey(p => p.CategoryId);
 			});
 
-			var admin = new IdentityRole("admin")
+			modelBuilder.Entity<CartItem>(entity =>
+			{
+				entity.HasKey(c => c.Id);
+				entity.HasOne(c => c.Product).WithMany(p => p.CartItems).HasForeignKey(c => c.ProductId);
+				entity.HasOne(c => c.User).WithMany(u => u.CartItems).HasForeignKey(c => c.UserId);
+			});
+
+            modelBuilder.Entity<OrderItem>(entity =>
+            {
+                entity.HasKey(o => o.Id);
+                entity.HasOne(o => o.Product).WithMany(p => p.OrderItems).HasForeignKey(o => o.ProductId);
+                entity.HasOne(o => o.Order).WithMany(o => o.OrderItems).HasForeignKey(o => o.OrderId);
+            });
+
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.HasKey(o => o.Id);
+                entity.HasOne(o => o.User).WithMany(u => u.Orders).HasForeignKey(o => o.UserId);
+                entity.Property(o => o.Subtotal).IsRequired().HasPrecision(9, 2);
+                entity.Property(o => o.Discount).IsRequired().HasPrecision(9, 2);
+                entity.Property(o => o.DeliveryFee).IsRequired().HasPrecision(9, 2);
+                entity.Property(o => o.Total).IsRequired().HasPrecision(9, 2);
+            });
+
+            var admin = new IdentityRole("admin")
 			{
 				NormalizedName = "admin"
 			};

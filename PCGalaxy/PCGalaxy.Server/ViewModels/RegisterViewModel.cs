@@ -18,42 +18,32 @@ namespace PCGalaxy.Server.ViewModels
 		public required string PhoneNumber { get; set; }
 
 		[DataType(DataType.Password)]
+		[MinLength(6, ErrorMessage = "Passwords must be at least 6 characters.")]
 		public required string Password { get; set; }
 
 		[DataType(DataType.Password)]
 		[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
 		public required string ConfirmPassword { get; set; }
 
+		private static readonly List<(string Regex, string ErrorMessage)> PasswordRules = new()
+		{
+			(@"\W", "Passwords must have at least one non alphanumeric character."),
+			(@"\d", "Passwords must have at least one digit ('0'-'9')."),
+			(@"[a-z]", "Passwords must have at least one lowercase ('a'-'z')."),
+			(@"[A-Z]", "Passwords must have at least one uppercase ('A'-'Z').")
+		};
+
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
-			var errors = new List<ValidationResult>();
+			var matchTimeout = TimeSpan.FromMilliseconds(200);
 
-			if (Password.Length < 6)
+			foreach (var (pattern, message) in PasswordRules)
 			{
-				errors.Add(new ValidationResult("Passwords must be at least 6 characters.", new[] { nameof(Password) }));
+				if (!Regex.IsMatch(Password, pattern, RegexOptions.None, matchTimeout))
+				{
+					yield return new ValidationResult(message, new[] { nameof(Password) });
+				}
 			}
-			if (!Regex.IsMatch(Password, @"\W"))
-			{
-				errors.Add(new ValidationResult("Passwords must have at least one non alphanumeric character.", new[] { nameof(Password) }));
-			}
-			if (!Regex.IsMatch(Password, @"\d"))
-			{
-				errors.Add(new ValidationResult("Passwords must have at least one digit ('0'-'9').", new[] { nameof(Password) }));
-			}
-			if (!Regex.IsMatch(Password, @"[a-z]"))
-			{
-				errors.Add(new ValidationResult("Passwords must have at least one lowercase ('a'-'z').", new[] { nameof(Password) }));
-			}
-			if (!Regex.IsMatch(Password, @"[A-Z]"))
-			{
-				errors.Add(new ValidationResult("Passwords must have at least one uppercase ('A'-'Z').", new[] { nameof(Password) }));
-			}
-			if (!Password.Distinct().Any())
-			{
-				errors.Add(new ValidationResult("Passwords must use at least 1 different characters.", new[] { nameof(Password) }));
-			}
-
-			return errors;
 		}
 	}
 }

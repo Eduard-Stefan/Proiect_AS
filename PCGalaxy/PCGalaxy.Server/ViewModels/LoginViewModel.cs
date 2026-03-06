@@ -10,6 +10,6 @@ namespace PCGalaxy.Server.ViewModels
 		[DataType(DataType.Password)]
 		public required string Password { get; set; }
 
-		public bool RememberMe { get; set; }
+		public required bool RememberMe { get; set; }
 	}
 }
