@@ -5,6 +5,7 @@ import { Product } from '../models/product.model';
 import { User } from '../models/user.model';
 import { AccountService } from '../services/account.service';
 import { CartItemsService } from '../services/cart-items.service';
+import { ShippingService } from '../services/shipping.service';
 
 @Component({
   selector: 'app-cart',
@@ -16,14 +17,15 @@ export class CartComponent implements OnInit {
   cartItems: CartItem[] = [];
   currentUser: User | undefined;
   product: Product | undefined;
-  deliveryFee: number = 5;
+  deliveryFee: number = 0;
   total: number = 0;
 
   constructor(
     private cartItemsService: CartItemsService,
     private accountService: AccountService,
+    private shippingService: ShippingService,
     private snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.accountService.getCurrentUser().subscribe({
@@ -41,7 +43,16 @@ export class CartComponent implements OnInit {
       next: (result: CartItem[]) => {
         this.cartItems = result;
         this.total = this.cartItems.reduce((acc, item) => acc + item.product!.price, 0);
-        this.total += this.deliveryFee;
+
+        this.shippingService.calculateShipping().subscribe({
+          next: (res) => {
+            this.deliveryFee = res.totalShippingFee;
+            this.total += this.deliveryFee;
+          },
+          error: (err) => {
+            console.error('Error fetching shipping fee', err);
+          }
+        });
       },
       error: (err) => {
         console.error(err);

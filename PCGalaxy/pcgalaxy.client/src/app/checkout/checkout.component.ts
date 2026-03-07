@@ -7,6 +7,7 @@ import { AccountService } from '../services/account.service';
 import { Location } from '@angular/common';
 import { Order } from '../models/order.model';
 import { OrderService } from '../services/order.service';
+import { ShippingService } from '../services/shipping.service';
 
 @Component({
   selector: 'app-checkout',
@@ -21,7 +22,7 @@ export class CheckoutComponent implements OnInit {
   couponCode: string = '';
   discount: number = 0;
   subtotal: number = 0;
-  deliveryFee: number = 5;
+  deliveryFee: number = 0;
   total: number = 0;
   discountMessage: string = '';
   currentUser: User | undefined;
@@ -30,6 +31,7 @@ export class CheckoutComponent implements OnInit {
     private accountService: AccountService,
     private cartItemsService: CartItemsService,
     private readonly orderService: OrderService,
+    private shippingService: ShippingService,
     private router: Router,
     private snackBar: MatSnackBar,
     private location: Location
@@ -57,7 +59,14 @@ export class CheckoutComponent implements OnInit {
           (acc, item) => acc + item.product!.price,
           0
         );
-        this.calculateTotal();
+
+        this.shippingService.calculateShipping().subscribe({
+          next: (res) => {
+            this.deliveryFee = res.totalShippingFee;
+            this.calculateTotal();
+          },
+          error: (err) => console.error('Error fetching shipping fee', err)
+        });
       },
       error: (err) => console.error(err),
     });
