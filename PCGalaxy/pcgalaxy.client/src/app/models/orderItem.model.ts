@@ -5,4 +5,5 @@ export interface OrderItem {
   productId: string;
   product: Product | undefined;
   orderId: string;
+  quantity: number;
 }

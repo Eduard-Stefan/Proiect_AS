@@ -72,6 +72,36 @@ h1 {
   margin: 0.5rem 0;
 }
 
-.cart-summary + .checkout-btn {
+.cart-summary+.checkout-btn {
   margin-top: 1rem;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.quantity-display {
+  font-size: 1.2rem;
+  font-weight: bold;
+  min-width: 2rem;
+  text-align: center;
+}
+
+.quantity-input {
+  width: 4rem;
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 0.2rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -moz-appearance: textfield; 
+}
+
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

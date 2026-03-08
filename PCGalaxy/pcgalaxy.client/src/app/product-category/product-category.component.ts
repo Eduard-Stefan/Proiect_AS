@@ -212,6 +212,7 @@ export class ProductCategoryComponent implements OnInit {
                     productId: product.id,
                     product: undefined,
                     userId: this.currentUser!.id,
+                    quantity: 1
                   })
                   .subscribe({
                     next: () => {

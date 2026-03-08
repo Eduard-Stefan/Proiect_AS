@@ -8,7 +8,6 @@ namespace PCGalaxy.Server.Services
         public async Task<decimal> CalculateTotalShippingForUserAsync(string userId)
         {
             var cartItems = await cartItemService.GetAllByUserIdAsync(userId);
-
             decimal totalShipping = 0;
             var factory = new ShippingCalculatorFactory();
 
@@ -18,7 +17,8 @@ namespace PCGalaxy.Server.Services
                 {
                     var categoryName = item.Product.Category.Name ?? string.Empty;
                     var calculator = factory.GetCalculator(categoryName);
-                    totalShipping += calculator.CalculateShippingCost(item.Product);
+
+                    totalShipping += calculator.CalculateShippingCost(item.Product, item.Quantity);
                 }
             }
 

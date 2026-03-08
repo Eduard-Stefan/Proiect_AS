@@ -4,6 +4,6 @@ namespace PCGalaxy.Server.Services.ShippingStrategies
 {
     public interface IShippingCalculator
     {
-        decimal CalculateShippingCost(ProductDto product);
+        decimal CalculateShippingCost(ProductDto product, int quantity);
     }
 }

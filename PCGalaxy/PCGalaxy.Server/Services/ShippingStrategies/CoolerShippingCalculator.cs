@@ -4,7 +4,7 @@ namespace PCGalaxy.Server.Services.ShippingStrategies
 {
     public class CoolerShippingCalculator : IShippingCalculator
     {
-        public decimal CalculateShippingCost(ProductDto product)
+        public decimal CalculateShippingCost(ProductDto product, int quantity)
         {
             decimal baseCost = 25.00m;
             if (product.Price > 3000)

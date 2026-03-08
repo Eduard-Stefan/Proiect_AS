@@ -8,6 +8,7 @@ import { Location } from '@angular/common';
 import { Order } from '../models/order.model';
 import { OrderService } from '../services/order.service';
 import { ShippingService } from '../services/shipping.service';
+import { CartItem } from '../models/cartItem.model';
 
 @Component({
   selector: 'app-checkout',
@@ -26,6 +27,7 @@ export class CheckoutComponent implements OnInit {
   total: number = 0;
   discountMessage: string = '';
   currentUser: User | undefined;
+  cartItems: CartItem[] = [];
 
   constructor(
     private accountService: AccountService,
@@ -51,24 +53,26 @@ export class CheckoutComponent implements OnInit {
   getCartItemsByUserId(userId: string): void {
     this.cartItemsService.getCartItemsByUserId(userId).subscribe({
       next: (items) => {
+        this.cartItems = items;
         if (items.length === 0) {
           this.router.navigate(['/cart']);
           return;
         }
+        
         this.subtotal = items.reduce(
-          (acc, item) => acc + item.product!.price,
+          (acc, item) => acc + (item.product!.price * item.quantity),
           0
         );
-
+        
         this.shippingService.calculateShipping().subscribe({
           next: (res) => {
             this.deliveryFee = res.totalShippingFee;
             this.calculateTotal();
           },
-          error: (err) => console.error('Error fetching shipping fee', err)
+          error: (err) => console.error('Error calculating shipping fee:', err),
         });
       },
-      error: (err) => console.error(err),
+      error: (err) => console.error('Error fetching cart items:', err),
     });
   }
 

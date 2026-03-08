@@ -14,13 +14,36 @@
           />
           <div class="item-details">
             <h3>
-              <a
-                [routerLink]="['/product', item.product!.id]"
-                class="product-link"
-                >{{ item.product!.name }}</a
-              >
+              <a [routerLink]="['/product', item.product!.id]" class="product-link">
+                {{ item.product!.name }}
+              </a>
             </h3>
-            <p>Price: ${{ item.product!.price }}</p>
+            
+            <p>Price: ${{ item.product!.price }} x {{ item.quantity }} = <strong>${{ item.product!.price * item.quantity }}</strong></p>
+            
+            <div class="quantity-controls">
+              <button mat-icon-button color="primary" (click)="decreaseQuantity(item)" [disabled]="item.quantity <= 1">
+                <mat-icon>remove</mat-icon>
+              </button>
+              
+              <input 
+                type="number" 
+                class="quantity-input" 
+                [(ngModel)]="item.quantity" 
+                (change)="onQuantityChange(item)"
+                (keypress)="preventInvalidCharacters($event)"
+                min="1"
+                [max]="item.product!.stock"
+              />
+
+              <button mat-icon-button color="primary" (click)="increaseQuantity(item)" [disabled]="item.quantity >= item.product!.stock">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+            
+            <p *ngIf="item.quantity >= item.product!.stock" style="color: red; font-size: 0.8rem; margin: 0;">
+              Maximum stock reached for this product.
+            </p>
           </div>
           <button mat-icon-button (click)="deleteCartItem(item.id!)">
             <mat-icon>delete</mat-icon>

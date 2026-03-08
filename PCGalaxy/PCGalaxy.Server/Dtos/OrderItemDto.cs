@@ -8,5 +8,6 @@ namespace PCGalaxy.Server.Dtos
         public Guid ProductId { get; set; }
         public ProductDto? Product { get; set; }
         public Guid OrderId { get; set; }
+        public int Quantity { get; set; }
     }
 }

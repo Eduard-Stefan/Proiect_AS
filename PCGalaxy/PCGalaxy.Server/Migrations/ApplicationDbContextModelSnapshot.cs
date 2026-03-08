@@ -51,13 +51,13 @@ namespace PCGalaxy.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "fab7378d-99dd-42bb-869b-6e62aba7ba0b",
+                            Id = "0a6a7b9e-76a6-4f44-ab7c-85d2f9b1be86",
                             Name = "admin",
                             NormalizedName = "admin"
                         },
                         new
                         {
-                            Id = "2c547182-662c-4599-bacb-169762a28703",
+                            Id = "c86e3663-9528-4710-acc6-94821d3acef0",
                             Name = "user",
                             NormalizedName = "user"
                         });
@@ -181,6 +181,9 @@ namespace PCGalaxy.Server.Migrations
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -352,6 +355,9 @@ namespace PCGalaxy.Server.Migrations
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

@@ -5,4 +5,5 @@ export interface CartItem {
   productId: string;
   product: Product | undefined;
   userId: string;
+  quantity: number;
 }

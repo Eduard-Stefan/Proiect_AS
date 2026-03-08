@@ -20,6 +20,10 @@ export class CartItemsService {
     return this.http.post<CartItem>(`${this.apiUrl}/CartItems`, cartItem, { withCredentials: true });
   }
 
+  updateCartItem(cartItem: CartItem): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/CartItems/${cartItem.id}`, cartItem, { withCredentials: true });
+  }
+  
   deleteCartItem(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/CartItems/${id}`, { withCredentials: true });
   }

@@ -42,7 +42,7 @@ export class CartComponent implements OnInit {
     this.cartItemsService.getCartItemsByUserId(userId).subscribe({
       next: (result: CartItem[]) => {
         this.cartItems = result;
-        this.total = this.cartItems.reduce((acc, item) => acc + item.product!.price, 0);
+        this.total = this.cartItems.reduce((acc, item) => acc + (item.product!.price * item.quantity), 0);
 
         this.shippingService.calculateShipping().subscribe({
           next: (res) => {
@@ -72,5 +72,57 @@ export class CartComponent implements OnInit {
         console.error(err);
       },
     });
+  }
+
+  increaseQuantity(item: CartItem): void {
+    if (item.product && item.quantity < item.product.stock) {
+      item.quantity++;
+      this.updateItemInBackend(item);
+    } else {
+      this.snackBar.open('Quantity cannot exceed stock', 'Close', { duration: 3000 });
+    }
+  }
+
+  decreaseQuantity(item: CartItem): void {
+    if (item.quantity > 1) {
+      item.quantity--;
+      this.updateItemInBackend(item);
+    }
+  }
+
+  private updateItemInBackend(item: CartItem): void {
+    this.cartItemsService.updateCartItem(item).subscribe({
+      next: () => {
+        this.total = this.cartItems.reduce((acc, curr) => acc + (curr.product!.price * curr.quantity), 0);
+
+        this.shippingService.calculateShipping().subscribe({
+          next: (res) => {
+            this.deliveryFee = res.totalShippingFee;
+            this.total += this.deliveryFee;
+          }
+        });
+      },
+      error: (err) => {
+        this.snackBar.open('Error updating quantity', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
+  onQuantityChange(item: CartItem): void {
+    if (!item.quantity || item.quantity < 1) {
+      item.quantity = 1;
+    } 
+    else if (item.product && item.quantity > item.product.stock) {
+      item.quantity = item.product.stock;
+      this.snackBar.open('Quantity cannot exceed stock', 'Close', { duration: 3000 });
+    }
+    
+    this.updateItemInBackend(item);
+  }
+
+  preventInvalidCharacters(event: KeyboardEvent): void {
+    if (!/^[0-9]$/.test(event.key)) {
+      event.preventDefault();
+    }
   }
 }

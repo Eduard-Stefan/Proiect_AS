@@ -7,6 +7,7 @@ namespace PCGalaxy.Server.Services.Interfaces
 		Task<CartItemDto?> GetByIdAsync(Guid id);
 		Task<List<CartItemDto>> GetAllByUserIdAsync(string userId);
 		Task CreateAsync(CartItemDto cartItem);
-		Task DeleteAsync(CartItemDto cartItem);
+        Task UpdateAsync(CartItemDto cartItem);
+        Task DeleteAsync(CartItemDto cartItem);
 	}
 }

@@ -24,7 +24,23 @@ namespace PCGalaxy.Server.Controllers
 			return Ok(cartItem);
 		}
 
-		[HttpDelete("{id:guid}")]
+        [HttpPut("{id:guid}")]
+		public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] CartItemDto cartItem)
+		{
+			if (id != cartItem.Id)
+			{
+				return BadRequest();
+			}
+			var existingCartItem = await cartItemService.GetByIdAsync(id);
+			if (existingCartItem == null)
+			{
+				return NotFound();
+			}
+			await cartItemService.UpdateAsync(cartItem);
+			return Ok(cartItem);
+        }
+
+        [HttpDelete("{id:guid}")]
 		public async Task<IActionResult> DeleteAsync(Guid id)
 		{
 			var cartItem = await cartItemService.GetByIdAsync(id);

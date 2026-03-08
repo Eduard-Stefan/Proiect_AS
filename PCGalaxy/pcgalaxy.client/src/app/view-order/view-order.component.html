@@ -18,6 +18,8 @@
         >
       </h3>
       <p>Price: ${{ orderItem.product!.price }}</p>
+      <p>Quantity: {{ orderItem.quantity }}</p>
+      <p>Subtotal: ${{ orderItem.product!.price * orderItem.quantity }}</p>
     </div>
   </div>
 </div>

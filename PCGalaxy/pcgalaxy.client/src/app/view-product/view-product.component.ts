@@ -54,7 +54,8 @@ export class ViewProductComponent {
                 id: undefined,
                 productId: product.id,
                 product: undefined,
-                userId: this.currentUser!.id
+                userId: this.currentUser!.id,
+                quantity: 1
               }).subscribe({
                 next: () => {
                   this.snackBar.open('Product added to cart', 'Close', {

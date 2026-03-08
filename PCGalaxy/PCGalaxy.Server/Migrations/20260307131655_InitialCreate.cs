@@ -233,7 +233,8 @@ namespace PCGalaxy.Server.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -258,7 +259,8 @@ namespace PCGalaxy.Server.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -306,8 +308,8 @@ namespace PCGalaxy.Server.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "2c547182-662c-4599-bacb-169762a28703", null, "user", "user" },
-                    { "fab7378d-99dd-42bb-869b-6e62aba7ba0b", null, "admin", "admin" }
+                    { "0a6a7b9e-76a6-4f44-ab7c-85d2f9b1be86", null, "admin", "admin" },
+                    { "c86e3663-9528-4710-acc6-94821d3acef0", null, "user", "user" }
                 });
 
             migrationBuilder.InsertData(

@@ -20,6 +20,7 @@ namespace PCGalaxy.Server.Services
                 {
                     Id = oi.Id,
                     ProductId = oi.ProductId,
+                    Quantity = oi.Quantity,
                     Product = new ProductDto
                     {
                         Id = oi.Product!.Id,
@@ -89,7 +90,7 @@ namespace PCGalaxy.Server.Services
                 CardCvv = orderDto.CardCvv!
             };
 
-            List<Guid> productIds = new List<Guid>();
+            List<(Guid ProductId, int Quantity)> productIds = new List<(Guid ProductId, int Quantity)>();
             await unitOfWork.CartItemRepository.GetByConditionAsync(c => c.UserId == orderDto.UserId)
                 .ForEachAsync(c =>
                 {
@@ -98,18 +99,19 @@ namespace PCGalaxy.Server.Services
                         Id = Guid.NewGuid(),
                         ProductId = c.ProductId,
                         OrderId = order.Id,
+                        Quantity = c.Quantity
                     };
                     unitOfWork.OrderItemRepository.CreateAsync(orderItem);
                     unitOfWork.CartItemRepository.DeleteAsync(c);
-                    productIds.Add(orderItem.ProductId);
+                    productIds.Add((c.ProductId, c.Quantity));
                 });
 
             await unitOfWork.OrderRepository.CreateAsync(order);
 
-            foreach (var productId in productIds)
+            foreach (var item in productIds)
             {
-                var product = await unitOfWork.ProductRepository.GetByConditionAsync(p => p.Id == productId).FirstOrDefaultAsync();
-                product!.Stock--;
+                var product = await unitOfWork.ProductRepository.GetByConditionAsync(p => p.Id == item.ProductId).FirstOrDefaultAsync();
+                product!.Stock -= item.Quantity;
                 await unitOfWork.ProductRepository.UpdateAsync(product);
             }
         }

@@ -29,7 +29,8 @@ namespace PCGalaxy.Server.Services
 				{
 					Id = w.Id,
 					ProductId = w.ProductId,
-					Product = new ProductDto
+                    Quantity = w.Quantity,
+                    Product = new ProductDto
 					{
 						Id = w.Product!.Id,
 						Name = w.Product.Name,
@@ -51,18 +52,42 @@ namespace PCGalaxy.Server.Services
 				.ToListAsync();
 		}
 
-		public async Task CreateAsync(CartItemDto cartItemDto)
-		{
-			var cartItem = new CartItem
-			{
-				Id = cartItemDto.Id,
-				ProductId = cartItemDto.ProductId,
-				UserId = cartItemDto.UserId,
-			};
-			await unitOfWork.CartItemRepository.CreateAsync(cartItem);
-		}
+        public async Task CreateAsync(CartItemDto cartItemDto)
+        {
+            var existingItem = await unitOfWork.CartItemRepository
+                .GetByConditionAsync(c => c.UserId == cartItemDto.UserId && c.ProductId == cartItemDto.ProductId)
+                .FirstOrDefaultAsync();
 
-		public async Task DeleteAsync(CartItemDto cartItemDto)
+            if (existingItem != null)
+            {
+                existingItem.Quantity += cartItemDto.Quantity > 0 ? cartItemDto.Quantity : 1;
+                await unitOfWork.CartItemRepository.UpdateAsync(existingItem);
+            }
+            else
+            {
+                var cartItem = new CartItem
+                {
+                    Id = cartItemDto.Id == Guid.Empty ? Guid.NewGuid() : cartItemDto.Id,
+                    ProductId = cartItemDto.ProductId,
+                    UserId = cartItemDto.UserId,
+                    Quantity = cartItemDto.Quantity > 0 ? cartItemDto.Quantity : 1
+                };
+                await unitOfWork.CartItemRepository.CreateAsync(cartItem);
+            }
+        }
+
+		public async Task UpdateAsync(CartItemDto cartItemDto)
+        {
+			var cartItem = await unitOfWork.CartItemRepository.GetByConditionAsync(w => w.Id == cartItemDto.Id)
+				.FirstOrDefaultAsync();
+			if (cartItem != null)
+			{
+				cartItem.Quantity = cartItemDto.Quantity;
+				await unitOfWork.CartItemRepository.UpdateAsync(cartItem);
+			}
+        }
+
+        public async Task DeleteAsync(CartItemDto cartItemDto)
 		{
 			var cartItem = await unitOfWork.CartItemRepository.GetByConditionAsync(w => w.Id == cartItemDto.Id)
 				.FirstOrDefaultAsync();
