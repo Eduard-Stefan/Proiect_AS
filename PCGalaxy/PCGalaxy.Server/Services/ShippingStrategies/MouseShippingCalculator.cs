@@ -4,9 +4,15 @@ namespace PCGalaxy.Server.Services.ShippingStrategies
 {
     public class MouseShippingCalculator : IShippingCalculator
     {
+        // Waives the shipping fee entirely for premium mice; otherwise, charges a standard per-unit rate.
         public decimal CalculateShippingCost(ProductDto product, int quantity)
         {
-            return 9.00m;
+            if (product.Price >= 400)
+            {
+                return 0.00m;
+            }
+
+            return 15.00m * quantity;
         }
     }
 }
